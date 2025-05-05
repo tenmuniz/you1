@@ -39,8 +39,13 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container navbar-container">
-            <div class="logo">GradeTracker</div>
-            <ul class="nav-menu">
+            <div class="logo-container">
+                <div class="logo">GradeTracker</div>
+                <button id="mobile-menu-toggle" class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <ul class="nav-menu" id="nav-menu">
                 <li><a href="#dashboard" class="nav-link active">Dashboard</a></li>
                 <li><a href="#cadastro" class="nav-link">Cadastrar</a></li>
                 <li><a href="#analise" class="nav-link">Análise</a></li>
@@ -116,23 +121,25 @@
             </button>
             
             <!-- Recent Grades Table -->
-            <div style="margin-top: 2rem;">
+            <div class="table-container" style="margin-top: 2rem;">
                 <h3>Notas Recentes</h3>
-                <table class="grades-table">
-                    <thead>
-                        <tr>
-                            <th>Disciplina</th>
-                            <th>Nota</th>
-                            <th>Data</th>
-                            <th>Período</th>
-                            <th>Situação</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Table content will be filled dynamically -->
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="grades-table">
+                        <thead>
+                            <tr>
+                                <th>Disciplina</th>
+                                <th>Nota</th>
+                                <th>Data</th>
+                                <th>Período</th>
+                                <th>Situação</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table content will be filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
         
@@ -315,6 +322,20 @@
         // Adiar instalação
         pwaDismissButton.addEventListener('click', (e) => {
             pwaInstallPrompt.style.display = 'none';
+        });
+
+        // Menu mobile
+        document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
+            const navMenu = document.getElementById('nav-menu');
+            navMenu.classList.toggle('show');
+        });
+
+        // Fechar menu ao clicar em um link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                const navMenu = document.getElementById('nav-menu');
+                navMenu.classList.remove('show');
+            });
         });
 
         // Adicionar comportamento específico para iOS

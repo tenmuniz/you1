@@ -150,11 +150,28 @@ button, .btn {
   align-items: center;
 }
 
+.logo-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .logo {
   font-family: var(--heading-font);
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--primary-color);
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--dark-gray);
+  font-size: 1.5rem;
+  padding: var(--spacing-xs);
+  cursor: pointer;
 }
 
 .nav-menu {
@@ -185,6 +202,32 @@ button, .btn {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--spacing-lg);
   padding-top: 70px; /* Account for fixed navbar */
+}
+
+/* Table responsive */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Action buttons */
+.btn-edit, .btn-delete {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: 5px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete {
+  background-color: var(--secondary-color);
+}
+
+.btn-edit:hover, .btn-delete:hover {
+  opacity: 0.8;
 }
 
 /* PWA Prompt */
@@ -597,6 +640,7 @@ button, .btn {
 @media (max-width: 768px) {
   .dashboard {
     grid-template-columns: 1fr;
+    padding-top: 120px; /* Aumentado para evitar sobreposição com navbar */
   }
   
   .stats-card {
@@ -604,18 +648,24 @@ button, .btn {
   }
   
   .analysis-tabs {
-    flex-direction: column;
+    flex-wrap: wrap;
     border-bottom: none;
+    gap: 5px;
   }
   
   .analysis-tab {
-    border-bottom: 1px solid var(--medium-gray);
-    margin-bottom: 0;
+    flex: 1 0 45%;
+    border: 1px solid var(--medium-gray);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 5px;
     padding: var(--spacing-sm);
+    text-align: center;
+    font-size: 0.9rem;
   }
   
   .analysis-tab.active {
-    border-bottom: 1px solid var(--primary-color);
+    background-color: rgba(0, 176, 255, 0.1);
+    border: 1px solid var(--primary-color);
   }
   
   .form-section, .analysis-content {
@@ -625,5 +675,103 @@ button, .btn {
   .modal-content {
     width: 90%;
     padding: var(--spacing-md);
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  /* Navbar Mobile */
+  .navbar {
+    padding: var(--spacing-md) 0;
+  }
+  
+  .navbar-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .nav-menu {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+  }
+  
+  .nav-menu.show {
+    max-height: 300px;
+  }
+  
+  .nav-link {
+    padding: var(--spacing-md);
+    display: block;
+    text-align: center;
+    border-bottom: 1px solid var(--medium-gray);
+  }
+  
+  /* Tabela responsiva */
+  .grades-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  
+  .grades-table th,
+  .grades-table td {
+    padding: 8px;
+  }
+  
+  /* Botões na tabela */
+  .btn-edit, .btn-delete {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    margin: 3px;
+    display: inline-block;
+  }
+}
+
+/* Dispositivos muito pequenos */
+@media (max-width: 480px) {
+  .analysis-tab {
+    flex: 1 0 100%;
+    font-size: 0.85rem;
+  }
+  
+  .stats-card-value {
+    font-size: 2rem;
+  }
+  
+  .stats-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .stats-card-icon {
+    margin-top: 5px;
+  }
+  
+  .pwa-prompt-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .form-group {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  /* Garantir que botões tenham tamanho mínimo para toque */
+  button, .btn, .btn-edit, .btn-delete {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .modal-content {
+    padding: var(--spacing-sm);
   }
 }
