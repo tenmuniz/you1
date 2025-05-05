@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GradeTracker - Gerenciamento de Notas Escolares</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <div class="logo">GradeTracker</div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-link active">Dashboard</a></li>
+                <li><a href="#cadastro" class="nav-link">Cadastrar</a></li>
+                <li><a href="#analise" class="nav-link">Análise</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section">
+            <h2>Seu Desempenho</h2>
+            
+            <!-- Stats Cards -->
+            <div class="dashboard">
+                <div class="stats-card">
+                    <div class="stats-card-header">
+                        <span class="stats-card-title">Média Geral</span>
+                        <i class="fas fa-chart-line stats-card-icon"></i>
+                    </div>
+                    <div class="stats-card-value" id="overallAverage">0.0</div>
+                    <div class="stats-card-label">em todas as disciplinas</div>
+                </div>
+                
+                <div class="stats-card">
+                    <div class="stats-card-header">
+                        <span class="stats-card-title">Melhor Disciplina</span>
+                        <i class="fas fa-trophy stats-card-icon"></i>
+                    </div>
+                    <div class="stats-card-value" id="bestSubject">-</div>
+                    <div class="stats-card-label">Continue assim!</div>
+                </div>
+                
+                <div class="stats-card">
+                    <div class="stats-card-header">
+                        <span class="stats-card-title">Precisa de Atenção</span>
+                        <i class="fas fa-exclamation-circle stats-card-icon"></i>
+                    </div>
+                    <div class="stats-card-value" id="improvementNeeded">-</div>
+                    <div class="stats-card-label">Foque seus estudos</div>
+                </div>
+            </div>
+            
+            <!-- Subject averages section removed as requested -->
+            
+            <!-- Charts -->
+            <div class="dashboard" style="margin-top: 2rem;">
+                <div class="stats-card">
+                    <div class="stats-card-header">
+                        <span class="stats-card-title">Desempenho por Disciplina</span>
+                        <i class="fas fa-chart-pie stats-card-icon"></i>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="overallChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="stats-card">
+                    <div class="stats-card-header">
+                        <span class="stats-card-title">Evolução por Período</span>
+                        <i class="fas fa-chart-line stats-card-icon"></i>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Form Section -->
+        <section id="cadastro" class="section form-section">
+            <h2 class="form-title">Cadastrar Nova Nota</h2>
+            <button id="addGradeBtn" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Adicionar Nota
+            </button>
+            
+            <!-- Recent Grades Table -->
+            <div style="margin-top: 2rem;">
+                <h3>Notas Recentes</h3>
+                <table class="grades-table">
+                    <thead>
+                        <tr>
+                            <th>Disciplina</th>
+                            <th>Nota</th>
+                            <th>Data</th>
+                            <th>Período</th>
+                            <th>Situação</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table content will be filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Analysis Section -->
+        <section id="analise" class="section analysis-section">
+            <h2>Análise de Desempenho</h2>
+            
+            <div class="analysis-tabs">
+                <div class="analysis-tab active">Comparação</div>
+                <div class="analysis-tab">Tendências</div>
+                <div class="analysis-tab">Previsões</div>
+                <div class="analysis-tab">Recomendações</div>
+            </div>
+            
+            <div class="analysis-content">
+                <p>Esta seção apresenta análises detalhadas do seu desempenho escolar com base no histórico de notas registradas.</p>
+                <p>Selecione uma das abas acima para visualizar diferentes tipos de análises e obter insights valiosos sobre seu progresso acadêmico.</p>
+                
+                <div id="comparison-tab" class="tab-content active">
+                    <h3>Comparação entre Períodos</h3>
+                    <p>Aqui você pode visualizar como seu desempenho evoluiu entre os diferentes períodos letivos.</p>
+                    
+                    <div class="chart-container" style="margin-top: 1.5rem;">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+
+                <div id="trends-tab" class="tab-content">
+                    <h3>Tendências de Desempenho</h3>
+                    <p>Análise das tendências de suas notas ao longo do tempo para identificar padrões de melhoria ou dificuldade.</p>
+                    
+                    <div class="chart-container" style="margin-top: 1.5rem;">
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                </div>
+
+                <div id="forecast-tab" class="tab-content">
+                    <h3>Previsão de Resultados</h3>
+                    <p>Com base no seu histórico, estas são as projeções para suas notas futuras e média final.</p>
+                    
+                    <div class="stats-card" style="margin-top: 1rem;">
+                        <div class="stats-card-header">
+                            <span class="stats-card-title">Previsão de Média Final</span>
+                            <i class="fas fa-magic stats-card-icon"></i>
+                        </div>
+                        <div class="stats-card-value">8.2</div>
+                        <div class="chart-container" style="margin-top: 1.5rem;">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="recommendations-tab" class="tab-content">
+                    <h3>Recomendações Personalizadas</h3>
+                    <p>Com base na análise do seu desempenho, aqui estão algumas recomendações para melhorar suas notas.</p>
+                    
+                    <div class="recommendations-list" style="margin-top: 1.5rem;">
+                        <div class="recommendation-item">
+                            <i class="fas fa-lightbulb" style="color: var(--primary-color); margin-right: 10px;"></i>
+                            <strong>Foque em Geografia:</strong> Esta é a disciplina com menor média. Dedique pelo menos 2 horas adicionais por semana.
+                        </div>
+                        <div class="recommendation-item" style="margin-top: 1rem;">
+                            <i class="fas fa-chart-line" style="color: var(--primary-color); margin-right: 10px;"></i>
+                            <strong>Mantenha o ritmo em História:</strong> Você demonstrou melhoria consistente. Continue com a estratégia atual.
+                        </div>
+                        <div class="recommendation-item" style="margin-top: 1rem;">
+                            <i class="fas fa-calendar-alt" style="color: var(--primary-color); margin-right: 10px;"></i>
+                            <strong>Prepare-se para o próximo período:</strong> Suas notas tendem a cair no 3º período. Planeje com antecedência.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Grade Modal -->
+    <div id="gradeModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="modal-header">
+                <h3 class="modal-title">Adicionar Nova Nota</h3>
+            </div>
+            <form id="gradeForm">
+                <div class="form-group">
+                    <label for="subject" class="form-label">Disciplina</label>
+                    <select id="subject" class="form-control" required>
+                        <option value="">Selecione a disciplina</option>
+                        <!-- Options will be added dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="grade" class="form-label">Nota</label>
+                    <input type="number" id="grade" class="form-control" min="0" max="10" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="date" class="form-label">Data</label>
+                    <input type="date" id="date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="period" class="form-label">Período</label>
+                    <select id="period" class="form-control" required>
+                        <option value="">Selecione o período</option>
+                        <option value="1AV">1ª Avaliação</option>
+                        <option value="2AV">2ª Avaliação</option>
+                        <option value="3AV">3ª Avaliação</option>
+                        <option value="4AV">4ª Avaliação</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="notes" class="form-label">Observações</label>
+                    <textarea id="notes" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
+</body>
+</html>
