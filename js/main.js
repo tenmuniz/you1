@@ -745,3 +745,88 @@ function updateCharts() {
     initializeForecastChart();
   }
 }
+
+// PWA-specific functions
+// LocalStorage management for offline functionality
+function saveDataToLocalStorage() {
+  localStorage.setItem('gradetracker_subjects', JSON.stringify(sampleSubjects));
+  localStorage.setItem('gradetracker_grades', JSON.stringify(sampleGrades));
+  localStorage.setItem('gradetracker_lastSync', new Date().toISOString());
+}
+
+function loadDataFromLocalStorage() {
+  const storedSubjects = localStorage.getItem('gradetracker_subjects');
+  const storedGrades = localStorage.getItem('gradetracker_grades');
+  
+  if (storedSubjects && storedGrades) {
+    try {
+      const subjects = JSON.parse(storedSubjects);
+      const grades = JSON.parse(storedGrades);
+      
+      // Atualizar as variáveis globais apenas se os dados forem válidos
+      if (Array.isArray(subjects) && Array.isArray(grades)) {
+        // Mesclar os dados do armazenamento local com os dados existentes
+        sampleSubjects.length = 0;
+        sampleGrades.length = 0;
+        
+        subjects.forEach(subject => sampleSubjects.push(subject));
+        grades.forEach(grade => sampleGrades.push(grade));
+        
+        // Atualizar a interface
+        updateGradesTable();
+        updateStatsCards();
+        updateCharts();
+        
+        return true;
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados do armazenamento local:', error);
+    }
+  }
+  
+  return false;
+}
+
+// Detectar quando o app estiver online/offline
+window.addEventListener('online', () => {
+  showNotification('Você está online agora. Dados serão sincronizados.', 'success');
+  // Aqui você poderia implementar uma sincronização com um backend
+});
+
+window.addEventListener('offline', () => {
+  showNotification('Você está offline. Os dados serão salvos localmente.', 'warning');
+});
+
+// Salvar dados quando o aplicativo for fechado ou minimizado
+window.addEventListener('beforeunload', () => {
+  saveDataToLocalStorage();
+});
+
+// Verificar dados locais ao carregar
+document.addEventListener('DOMContentLoaded', () => {
+  // Tentar carregar dados do localStorage primeiro
+  const hasLocalData = loadDataFromLocalStorage();
+  
+  if (!hasLocalData) {
+    // Se não houver dados locais, carregar dados de exemplo
+    loadSampleData();
+  }
+  
+  // Otimização para iOS
+  if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
+    // Evitar delay de 300ms para eventos de toque
+    document.documentElement.style.touchAction = 'manipulation';
+    
+    // Ajustar tamanho dos elementos para dedos (mínimo 44x44 pixels)
+    const touchElements = document.querySelectorAll('button, .btn, a.nav-link, input[type="submit"]');
+    touchElements.forEach(el => {
+      el.style.minHeight = '44px';
+      el.style.minWidth = '44px';
+    });
+  }
+  
+  // Verificar status de conexão
+  if (!navigator.onLine) {
+    showNotification('Você está offline. Os dados serão salvos localmente.', 'warning');
+  }
+});

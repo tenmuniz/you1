@@ -34,6 +34,10 @@
   --border-radius-sm: 0.25rem;
   --border-radius-md: 0.5rem;
   --border-radius-lg: 1rem;
+  
+  /* iOS Safe Areas */
+  --safe-area-inset-top: 0px;
+  --safe-area-inset-bottom: 0px;
 }
 
 /* Base Styles */
@@ -41,6 +45,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
@@ -51,6 +56,16 @@ html, body {
   line-height: 1.6;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  /* Prevent overscroll effects */
+  overscroll-behavior: none;
+  /* Prevent text size adjustment */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  /* iOS safe area support */
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -78,6 +93,8 @@ button, .btn {
   border-radius: var(--border-radius-md);
   border: none;
   transition: all 0.3s ease;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .btn-primary {
@@ -85,7 +102,7 @@ button, .btn {
   color: var(--white);
 }
 
-.btn-primary:hover {
+.btn-primary:hover, .btn-primary:active {
   background-color: #0090d9;
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
@@ -96,7 +113,7 @@ button, .btn {
   color: var(--white);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover, .btn-secondary:active {
   background-color: #e55a26;
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
@@ -120,9 +137,11 @@ button, .btn {
   box-shadow: var(--shadow-sm);
   position: fixed;
   width: 100%;
-  top: 0;
+  top: env(safe-area-inset-top, 0);
   z-index: 1000;
   padding: var(--spacing-sm) 0;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .navbar-container {
@@ -166,6 +185,65 @@ button, .btn {
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--spacing-lg);
   padding-top: 70px; /* Account for fixed navbar */
+}
+
+/* PWA Prompt */
+.pwa-prompt {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--white);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-lg);
+  z-index: 9999;
+  border-top-left-radius: var(--border-radius-lg);
+  border-top-right-radius: var(--border-radius-lg);
+  transform: translateY(0);
+  transition: transform 0.3s ease;
+  padding-bottom: calc(var(--spacing-lg) + env(safe-area-inset-bottom, 0px));
+}
+
+.pwa-prompt-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.pwa-prompt-content h3 {
+  margin-bottom: var(--spacing-sm);
+}
+
+.pwa-prompt-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+/* iOS specific styles */
+@supports (-webkit-touch-callout: none) {
+  .form-control {
+    font-size: 16px !important; /* Prevent zoom on iOS when focusing inputs */
+  }
+  
+  select {
+    /* Better appearance for iOS selects */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath fill='%236c757d' d='M4 5.5L0.5 2H7.5L4 5.5Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 8px 10px;
+  }
+  
+  /* Fix for iOS Safe Areas */
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  
+  /* iOS momentum scrolling */
+  .stats-card, .form-section, .analysis-section {
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .stats-card {

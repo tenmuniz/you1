@@ -2,8 +2,30 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>GradeTracker - Gerenciamento de Notas Escolares</title>
+
+    <!-- PWA -->
+    <meta name="theme-color" content="#00B0FF">
+    <meta name="description" content="Aplicativo de gerenciamento de notas escolares">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GradeTracker">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167x167.png">
+
+    <!-- iOS Splash Screens -->
+    <link rel="apple-touch-startup-image" href="icons/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="icons/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="icons/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="icons/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="icons/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
@@ -61,8 +83,6 @@
                     <div class="stats-card-label">Foque seus estudos</div>
                 </div>
             </div>
-            
-            <!-- Subject averages section removed as requested -->
             
             <!-- Charts -->
             <div class="dashboard" style="margin-top: 2rem;">
@@ -215,10 +235,10 @@
                     <label for="period" class="form-label">Período</label>
                     <select id="period" class="form-control" required>
                         <option value="">Selecione o período</option>
-                        <option value="1AV">1ª Avaliação</option>
-                        <option value="2AV">2ª Avaliação</option>
-                        <option value="3AV">3ª Avaliação</option>
-                        <option value="4AV">4ª Avaliação</option>
+                        <option value="P1">1º Período</option>
+                        <option value="P2">2º Período</option>
+                        <option value="P3">3º Período</option>
+                        <option value="P4">4º Período</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -230,7 +250,79 @@
         </div>
     </div>
 
+    <!-- Install PWA Popup -->
+    <div id="pwaInstallPrompt" class="pwa-prompt">
+        <div class="pwa-prompt-content">
+            <h3>Instale o GradeTracker</h3>
+            <p>Adicione à tela inicial para acesso rápido e recursos offline.</p>
+            <div class="pwa-prompt-buttons">
+                <button id="pwaInstallButton" class="btn btn-primary">Instalar</button>
+                <button id="pwaDismissButton" class="btn btn-secondary">Mais tarde</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom JS -->
     <script src="js/main.js"></script>
+    <script>
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registrado com sucesso: ', registration.scope);
+                }, function(err) {
+                    console.log('Falha ao registrar ServiceWorker: ', err);
+                });
+            });
+        }
+
+        // Lógica para instalação do PWA
+        let deferredPrompt;
+        const pwaInstallPrompt = document.getElementById('pwaInstallPrompt');
+        const pwaInstallButton = document.getElementById('pwaInstallButton');
+        const pwaDismissButton = document.getElementById('pwaDismissButton');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Previne o comportamento padrão do navegador
+            e.preventDefault();
+            // Armazena o evento para usar depois
+            deferredPrompt = e;
+            // Mostra o prompt de instalação personalizado
+            if (!isInStandaloneMode()) {
+                pwaInstallPrompt.style.display = 'block';
+            }
+        });
+
+        // Verificar se já está em modo standalone
+        function isInStandaloneMode() {
+            return (window.matchMedia('(display-mode: standalone)').matches) || 
+                   (window.navigator.standalone) || 
+                   document.referrer.includes('android-app://');
+        }
+
+        // Instalação
+        pwaInstallButton.addEventListener('click', (e) => {
+            pwaInstallPrompt.style.display = 'none';
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('Usuário aceitou a instalação');
+                }
+                deferredPrompt = null;
+            });
+        });
+
+        // Adiar instalação
+        pwaDismissButton.addEventListener('click', (e) => {
+            pwaInstallPrompt.style.display = 'none';
+        });
+
+        // Adicionar comportamento específico para iOS
+        if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
+            // Corrigir o viewport para iOS
+            document.documentElement.style.setProperty('--safe-area-inset-top', 'env(safe-area-inset-top)');
+            document.documentElement.style.setProperty('--safe-area-inset-bottom', 'env(safe-area-inset-bottom)');
+        }
+    </script>
 </body>
 </html>
